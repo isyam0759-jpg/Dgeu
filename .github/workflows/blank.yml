@@ -19,10 +19,18 @@ jobs:
         with:
           gradle-version: 8.1.1
 
+      - name: Ekstrak zip jika perlu
+        run: |
+          if [ -f SirenHeadMod.zip ]; then
+            unzip -q -o SirenHeadMod.zip -d work
+          else
+            mkdir -p work && cp -r . work/ 2>/dev/null || true
+          fi
+
       - name: Cari folder proyek
         id: find
         run: |
-          F=$(find . -name settings.gradle -not -path './.git/*' | head -1)
+          F=$(find work -name settings.gradle | head -1)
           if [ -z "$F" ]; then
             echo "settings.gradle tidak ditemukan. Isi repo:"
             ls -R | head -60
@@ -36,5 +44,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: sirenhead-jar
-          path: "**/build/libs/sirenhead-*.jar"
+          path: "work/**/build/libs/sirenhead-*.jar"
           if-no-files-found: error
